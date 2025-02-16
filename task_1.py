@@ -1,41 +1,44 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-# Create a graph for the New York Subway network 
+# Define the metro lines and their stations
+metro_lines = {
+    "Red": [("1st Ave", "2nd Ave"), ("2nd Ave", "3rd Ave"), ("3rd Ave", "4th Ave")],
+    "Blue": [("5th Ave", "6th Ave"), ("6th Ave", "7th Ave"), ("7th Ave", "8th Ave")],
+    "Green": [("3rd Ave", "5th Ave"), ("5th Ave", "7th Ave"), ("7th Ave", "9th Ave")],
+}
+
+# Colors for each line
+line_colors = {
+    "Red": "red",
+    "Blue": "blue",
+    "Green": "green",
+}
+
+# Create a graph
 G = nx.Graph()
 
-# Add stations as an example 
-stations = [
-    "1st Ave", "3rd Ave", "5th Ave", "7th Ave", "9th Ave", "10th Ave", "14th St", 
-    "23rd St", "34th St", "42nd St", "59th St", "72nd St", "86th St"
-]
-
-# Add edges to represent the subway lines 
-edges = [
-    ("1st Ave", "3rd Ave"), ("3rd Ave", "5th Ave"), ("5th Ave", "7th Ave"),
-    ("7th Ave", "9th Ave"), ("9th Ave", "10th Ave"), ("10th Ave", "14th St"),
-    ("14th St", "23rd St"), ("23rd St", "34th St"), ("34th St", "42nd St"),
-    ("42nd St", "59th St"), ("59th St", "72nd St"), ("72nd St", "86th St")
-]
-
 # Add nodes and edges to the graph
-G.add_nodes_from(stations)
-G.add_edges_from(edges)
+edges = []
+colors = []
+
+for line, stations in metro_lines.items():
+    for station1, station2 in stations:
+        G.add_edge(station1, station2)
+        edges.append((station1, station2))
+        colors.append(line_colors[line]) 
+
+# Create a layout for the graph
+pos = nx.spring_layout(G, seed=42)
 
 # Visualize the graph
-plt.figure(figsize=(10, 8))
-nx.draw(G, with_labels=True, node_size=3000, node_color='skyblue', font_size=10, font_weight='bold', edge_color='gray')
-plt.title("Simplified New York Subway Network")
+plt.figure(figsize=(8, 6))
+nx.draw(G, pos, with_labels=True, edge_color=colors, node_color="lightblue", node_size=2000, font_size=10)
+
+plt.title("NYC Metro Network Graph")
 plt.show()
 
-# Calculate and display the characteristics of the graph
-num_vertices = G.number_of_nodes()
-num_edges = G.number_of_edges()
-degrees = dict(G.degree())
-degrees = [G.degree(node) for node in G.nodes]
-num_vertices, num_edges, degrees
-
 # Print the results
-print(f"Number of stations (nodes): {num_vertices}")
-print(f"Number of subway lines (edges): {num_edges}")
-print(f"Degree of each station: {dict(zip(stations, degrees))}")
+print(f"Number of stations (nodes): {G.number_of_nodes()}")
+print(f"Number of edges: {G.number_of_edges()}")
+print(f"Degree of each station: {dict(zip(G.nodes, [G.degree(node) for node in G.nodes]))}")
